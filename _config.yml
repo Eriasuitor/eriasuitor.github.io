@@ -27,9 +27,11 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username: Eriasuitor
 
 # Build settings
-remote_theme: sighingnow/jekyll-gitbook
+theme: minima
 toc:
   enabled: true
+  h_min: 1
+  h_max: 3
 plugins:
   - jekyll-feed
 
