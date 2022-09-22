@@ -28,6 +28,8 @@ github_username: Eriasuitor
 
 # Build settings
 remote_theme: sighingnow/jekyll-gitbook
+toc:
+  enabled: true
 plugins:
   - jekyll-feed
 
