@@ -1,0 +1,36 @@
+.postContent {
+  max-width: 50rem;
+  margin: 0 auto;
+}
+
+.section {}
+
+.sectionTitle {
+  max-width: 7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sections {
+  margin-left: 1rem;
+}
+
+.toc {
+  position: fixed;
+  right: 1rem;
+  top: 5rem;
+  max-height: calc(100% - 6rem);
+  overflow: scroll;
+}
+
+.toc .title {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toc .title:hover {
+  cursor: pointer;
+}
