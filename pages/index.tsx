@@ -1,18 +1,13 @@
 import { GetStaticProps } from 'next';
-import Head from 'next/head';
 import Link from 'next/link';
-import { useState } from 'react';
 import { getPosts, PostNode } from '../lib/post';
 import styles from '../styles/Home.module.css';
+import Title from '@/components/title';
 
 export default function Home({ posts }: { posts: PostNode[] }) {
   return (
     <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
+      <Title text='首页' />
       <main>
         <h1 className="title">
           Read <Link href="/posts/first-post">this page!</Link>
@@ -27,10 +22,10 @@ export default function Home({ posts }: { posts: PostNode[] }) {
         </div>
       </main>
     </div>
-  )
+  );
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const posts = await getPosts()
-  return { props: { posts } }
+  const posts = await getPosts();
+  return { props: { posts } };
 };

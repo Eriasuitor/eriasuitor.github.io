@@ -1,41 +1,49 @@
 ---
 layout: post
-title:  "设计模式"
-date:   2022-02-17 11:14:00 +0800
+title: "设计模式"
+date: 2022-02-17 11:14:00 +0800
 categories: default
 ---
+
 > 著作说明：文中图片均有“稀土掘金技术社区”水印，因为本人于该网站首次发布此文，原始链接为：[https://juejin.cn/post/7065511789031030820](https://juejin.cn/post/7065511789031030820)。
 
-> 此文档处于beta阶段，非正式发布版本。
+> 此文档处于 beta 阶段，非正式发布版本。
 
-> 本文示例采用Java语言实现，请注意其他语言在部分特性上可能存在的差异。
+> 本文示例采用 Java 语言实现，请注意其他语言在部分特性上可能存在的差异。
 
 # 设计模式七大原则
+
 这里所说的原则，仅仅是一些软件工程的概念，并非准则。这些原则均由不同的人在其书籍或文章中提出，并不一定具有整体性、系统性，需结合实际情况选择性的使用。在常见的设计模式中，会有很多违反这些原则的情况。
+
 ## 1. 单一职责原则(Single Responsibility Principle, SRP)
-每个类都应该只有单一的功能，也即唯一的改变原因。更为通俗的说，我们需要对业务功能做合理的划分。比如在UserService中我们提供了注册和登录功能，但其中涉及的操作DB、验证码发送等细节操作的方法我们都需要放在专门的服务中并暴露给UserService调用。
+
+每个类都应该只有单一的功能，也即唯一的改变原因。更为通俗的说，我们需要对业务功能做合理的划分。比如在 UserService 中我们提供了注册和登录功能，但其中涉及的操作 DB、验证码发送等细节操作的方法我们都需要放在专门的服务中并暴露给 UserService 调用。
 
 职责的划分往往“不是一门技术，而是一门艺术”，是系统解耦的关键所在。
 
 ## 2. 接口隔离原则(Interface Segregation Principle, ISP)
+
 此原则强调细化接口以获得使用上的灵活性，拒绝将多种功能方法整合到一个臃肿的接口中。类实现接口时，该接口应未提供任何冗余的方法，如果有则说明该接口应该被拆分为多个接口。
 
 ## 3. 开闭原则(Open Closed Principle, OCP)
+
 在为一个良好设计的系统新增功能时，我们应该做到对拓展开放，对修改关闭。我们可以通过“抽象约束、封装变化”来实现这一目标。具体来说，我们可以通过抽象类或接口来定义抽象层，并将稳定不变的逻辑在抽象层固定，而可变部分则在派生类中实现。当新增需求时，我们可以直接派生一个新的实现类而无需修改既有代码。
 
 ## 4. 里氏替换原则(Liskov Substitution Principle, LSP)
+
 将基类都替换成它的子类时，要求程序的行为没有变化。具体来说，子类可以拓展父类的功能而不能改变父类原有的功能，也即子类可以新增自己的方法，但不要重写父类的方法。此原则阐述了有关继承的一些原则，也就是什么时候适合使用继承，是对开闭原则的补充。
 具体实践为：
+
 1. 子类可以实现父类的抽象方法，但不能覆写父类的非抽象方法。
 2. 子类可以增加自己特有的方法。
-3. 子类重载父类方法时，方法的传入参数不能比父类严格。如父类传入List，子类则不能传入ArrayList（ArrayList实现了List接口）。
-4. 子类实现父类方法时，返回类型不能比父类宽松。如父类返回ArrayList，子类则不能返回List。
+3. 子类重载父类方法时，方法的传入参数不能比父类严格。如父类传入 List，子类则不能传入 ArrayList（ArrayList 实现了 List 接口）。
+4. 子类实现父类方法时，返回类型不能比父类宽松。如父类返回 ArrayList，子类则不能返回 List。
 
 违反此原则的典型例子是：正方形(Square)继承长方形(Rectangle)。
 
-因为正方形势必会重载长方形的setLength和setWidth方法（无论是设置长还是宽，都需要同时修改长和宽以满足二者相等的要求），造成***将长方形（基类）都替换成正方形（子类），程序的行为发生了变化***。
+因为正方形势必会重载长方形的 setLength 和 setWidth 方法（无论是设置长还是宽，都需要同时修改长和宽以满足二者相等的要求），造成**_将长方形（基类）都替换成正方形（子类），程序的行为发生了变化_**。
 
-``` Java
+```Java
 // 替换前
 Rectangle shape = new Rectangle();
 shape.setLength(100);
@@ -48,14 +56,16 @@ shape.setWidth(50); // 势必会同时设置widht与length
 System.out.printf(shape.area());   // 2500
 ```
 
-此时可以依据合成复用原则，在Square中添加一个类型为Rectangle的成员变量并取消二者的继承关系，同时核心功能依然通过调用Rectangle的方法实现，但不再提供setWidth方法，在setLength时，同时调用Rectangle的setWidth和setLength方法。
+此时可以依据合成复用原则，在 Square 中添加一个类型为 Rectangle 的成员变量并取消二者的继承关系，同时核心功能依然通过调用 Rectangle 的方法实现，但不再提供 setWidth 方法，在 setLength 时，同时调用 Rectangle 的 setWidth 和 setLength 方法。
 
 ## 5. 依赖倒转(倒置)原则(Dependence Inversion Principle, DIP)
+
 高层模块不应该依赖低层模块，两者都应该依赖其抽象；抽象不应该依赖细节，细节应该依赖抽象。
 
-也即我们应该面向接口或抽象编程，不要面向具体实现。如在UserService中，我们需要发送短信验证码，但短信服务商有多个，我们在UserService中引入的应该是“SmsInterface”或“SmsAbstractService”而非"AliSmsService"，而引入的具体实现类则由外部决定并传入。
+也即我们应该面向接口或抽象编程，不要面向具体实现。如在 UserService 中，我们需要发送短信验证码，但短信服务商有多个，我们在 UserService 中引入的应该是“SmsInterface”或“SmsAbstractService”而非"AliSmsService"，而引入的具体实现类则由外部决定并传入。
 
 具体实践为：
+
 1. 每个类应尽量实现了接口或继承了抽象类。
 2. 引用对象时应尽量引用其接口或基类。
 3. 任何类都不应该从具体类派生。
@@ -63,13 +73,14 @@ System.out.printf(shape.area());   // 2500
 
 ## 6. 迪米特法则(Law of Demeter, LoD)
 
-组合（合成）关系：是一种***强的拥有***关系，如树根与大树的关系，树根与其他部分组成了大树，并且大树一定有树根。
+组合（合成）关系：是一种**_强的拥有_**关系，如树根与大树的关系，树根与其他部分组成了大树，并且大树一定有树根。
 
-聚合关系：是一种***弱的拥有***关系，如大树与花园的关系，大树可以与其他花花草草组成花园，但花园并不是一定要有大树。
+聚合关系：是一种**_弱的拥有_**关系，如大树与花园的关系，大树可以与其他花花草草组成花园，但花园并不是一定要有大树。
 
 又称最少知识原则（Least Knowledge Principle, LKP)，简单的说，就是仅调用与当前对象有**关联**、聚合或组合关系的对象中的方法。而对于其他对象，可通过第三方转发调用。
 
 ## 7. 合成复用原则(Composite Reuse Principle, CRP)
+
 又称组合/聚合复用原则(Composition/Aggregate Reuse Principle, CARP)，
 
 此原则强调尽量使用合成（组合）或聚合来达到复用的目的。满足里氏替换原则时可使用继承，其他情况则选择合成或聚合。
@@ -78,20 +89,27 @@ System.out.printf(shape.area());   // 2500
 
 > “审慎地组合使用对象组合与类继承，优于单独使用其中任何一种。”
 >
-> 摘录来自: 马丁·福勒(Martin Fowler). “重构：改善既有代码的设计（第2版）
+> 摘录来自: 马丁·福勒(Martin Fowler). “重构：改善既有代码的设计（第 2 版）
 
 # 说明
-## UML类图样例
+
+## UML 类图样例
+
 ![5-200Z1142Qb13-2.jpg](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5865365e395f45ddb547e6a803a0a5b5~tplv-k3u1fbpfcp-watermark.image?)
 
 # 创建型模式(Creational Patterns)
+
 ## 简单工厂模式(Simple factory)
+
 ### 场景描述
-我们需要根据用户选择的运输方式，如"road"、"sea"、"air"，实例化Ship, Plane, Truck三种交通工具的一种并返回。
+
+我们需要根据用户选择的运输方式，如"road"、"sea"、"air"，实例化 Ship, Plane, Truck 三种交通工具的一种并返回。
 
 ### 思路
+
 1. 我们可以将这个函数放在任意服务类中，但这类函数往往被多处调用，所以考虑写在工具类。故实现如下：
-``` Java
+
+```Java
 public class Utils {
     public static Transport createTransport(String transport) {
         switch (transport) {
@@ -109,10 +127,14 @@ public class Utils {
 ```
 
 ### 模式
-这个工具类你可以称为工厂类，也就是专门用来生产实例的工厂，同时为了让大家知道这个类是工厂类，将Utils类名改为TransportFactory。
+
+这个工具类你可以称为工厂类，也就是专门用来生产实例的工厂，同时为了让大家知道这个类是工厂类，将 Utils 类名改为 TransportFactory。
+
 ### 变体
+
 有时候我们会像这样创建对象：
-``` Java
+
+```Java
 public class Factory {
     public static Transport createTruck() {
         return new YellowTruck();
@@ -125,43 +147,53 @@ public class Factory {
     }
 }
 ```
-这也是***简单工厂模式***，它似乎毫无意义，但从代码结构上看，却有如下好处：
-1. 我们可以根据情况返回其他的Truck类或代理类，比如YellowTruck、ProxyTruck，或者传入参数来决定具体的实现类。
+
+这也是**_简单工厂模式_**，它似乎毫无意义，但从代码结构上看，却有如下好处：
+
+1. 我们可以根据情况返回其他的 Truck 类或代理类，比如 YellowTruck、ProxyTruck，或者传入参数来决定具体的实现类。
 2. 函数名往往隐含着业务注解，我们可以通过修改工厂类获取实例的方法名来使业务逻辑更清晰。
 3. 我们可以返回一个新实例化的对象，也可以返回一个缓存的对象以实现对象的共用。
 
 ## 抽象工厂模式(Abstract Factory)
 
 ### 场景描述
+
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eac47bbb5b374279b76a35db65d6f9d3~tplv-k3u1fbpfcp-watermark.image?)
-现有如上图所示的继承关系，我们需要根据global.context.os获取当前平台，并在所有使用Button和Dialog的地方实例化对应平台的组件类，同时我们希望当需要适配新平台时能足够方便。
+现有如上图所示的继承关系，我们需要根据 global.context.os 获取当前平台，并在所有使用 Button 和 Dialog 的地方实例化对应平台的组件类，同时我们希望当需要适配新平台时能足够方便。
 
 ### 思路
-1. 我们的获取逻辑拥有可复用性，所以使用一个类Components并为其提供getButton、getDialog函数，在需要实例化组件类的地方，调用对应方法即可。
-2. getButton、getDialog函数需要根据不同平台返回不同的具体对象，一般来说可以写很多的if...else...语句进行判断并返回正确的对象。
-3. 然而每个函数中都写同一段if...else...显然是不明智的，基于面向对象的思想，我们可以使用继承，故使用如下继承体系。
-![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d8a0ed87268b4b7cb85d93be5ef09ae3~tplv-k3u1fbpfcp-watermark.image?)
-4. 最后我们只需要维护一个AbstractComponents类型的components，并在系统初始化时通过读取global.context.os的值根据此值具体决定实例化IOSComponents, AndroidComponents或WindowsComponents并赋值给变量components。
+
+1. 我们的获取逻辑拥有可复用性，所以使用一个类 Components 并为其提供 getButton、getDialog 函数，在需要实例化组件类的地方，调用对应方法即可。
+2. getButton、getDialog 函数需要根据不同平台返回不同的具体对象，一般来说可以写很多的 if...else...语句进行判断并返回正确的对象。
+3. 然而每个函数中都写同一段 if...else...显然是不明智的，基于面向对象的思想，我们可以使用继承，故使用如下继承体系。
+   ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d8a0ed87268b4b7cb85d93be5ef09ae3~tplv-k3u1fbpfcp-watermark.image?)
+4. 最后我们只需要维护一个 AbstractComponents 类型的 components，并在系统初始化时通过读取 global.context.os 的值根据此值具体决定实例化 IOSComponents, AndroidComponents 或 WindowsComponents 并赋值给变量 components。
 
 ### 模式
+
 整个实现的抽象化表达为：
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/894be1b40104449d93a184226a213533~tplv-k3u1fbpfcp-watermark.image?)
 
 我们称之为抽象工厂模式。你甚至可以将这个模式称为“抽象工厂类模式”，以与“工厂模式”（也即“工厂类模式”）相关联。二者的区别就是“抽象工厂模式”将工厂类也引入了继承体系，用不同子类来返回不同的实例化对象。
 
 ## 工厂方法模式(Factory Method)
+
 ### 场景描述
+
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3b956e7f5a3c482e908b83c29841c251~tplv-k3u1fbpfcp-watermark.image?)
-现需要实现一个Game类进行游戏的渲染和控制，它引用了GameLogic用于控制游戏逻辑，如何才能快速的拓展Game让我们无需每次生成简单游戏时均需要进行如下操作：
-``` Java
+现需要实现一个 Game 类进行游戏的渲染和控制，它引用了 GameLogic 用于控制游戏逻辑，如何才能快速的拓展 Game 让我们无需每次生成简单游戏时均需要进行如下操作：
+
+```Java
 Game simpleGame = new Game();
 SimpleGameLogic simpleLogic = new SimpleGameLogic();
 simpleGame.setLogic(simpleLogic)
 ```
 
 ### 思路
-1. 我们可以从Game类派生出SimpleGame、MediumGame、DifficultGame，并重写Game中的getGameLogic()方法，分别返回一个SimpleGameLogic、MediumGameLogic、DifficultGameLogic的实例对象。
-``` Java
+
+1. 我们可以从 Game 类派生出 SimpleGame、MediumGame、DifficultGame，并重写 Game 中的 getGameLogic()方法，分别返回一个 SimpleGameLogic、MediumGameLogic、DifficultGameLogic 的实例对象。
+
+```Java
 public abstract class Game {
     public void start() {
         GameLogic gameLogic = getGameLogic();
@@ -193,28 +225,34 @@ public class DifficultGame extends Game {
     }
 }
 ```
+
 2. 当我们需要初始化简单游戏时，仅需：
-``` Java
+
+```Java
 Game simpleGame = new SimpleGame();
 ```
-3. 这样做的好处是当你需要将简单游戏的逻辑从SimpleGameLogic改成RobotGameLogic时，不需要修改每个初始化Game的地方而仅仅需要修改SimpleGame重写的getGameLogic方法。
+
+3. 这样做的好处是当你需要将简单游戏的逻辑从 SimpleGameLogic 改成 RobotGameLogic 时，不需要修改每个初始化 Game 的地方而仅仅需要修改 SimpleGame 重写的 getGameLogic 方法。
 
 ### 模式
+
 整个实现的抽象化表达为：
 ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/afc324d243974e6d984d8e2d7c6bfe13~tplv-k3u1fbpfcp-watermark.image?)
 
-你可以称之为***工厂方法模式***，父类定义一个创建对象的方法而让子类决定具体实例化哪个类。
+你可以称之为**_工厂方法模式_**，父类定义一个创建对象的方法而让子类决定具体实例化哪个类。
 
-***简单工厂模式***和***抽象工厂模式***定义的是一个工厂类，整个类存在的初衷就是用于生产不同的实例，**工厂**二字用于描述整个类。而工厂方法仅仅是业务逻辑中的某个（或某几个）方法是用于在不同派生类中生产不同的实例，**工厂**二字仅仅用于描述类中创建实例相关的部分方法。
+**_简单工厂模式_**和**_抽象工厂模式_**定义的是一个工厂类，整个类存在的初衷就是用于生产不同的实例，**工厂**二字用于描述整个类。而工厂方法仅仅是业务逻辑中的某个（或某几个）方法是用于在不同派生类中生产不同的实例，**工厂**二字仅仅用于描述类中创建实例相关的部分方法。
 
 ### 混淆
+
 如有以下类：
-``` Java
+
+```Java
 public class Game {
     public int year;
     public int month;
     public int day;
-    
+
     public void start() {
         Date date = getDate();
         ...
@@ -229,30 +267,37 @@ public class Game {
     }
 }
 ```
-***getDate方法***并非***工厂方法***，而仅能称为***构建方法***。因为它并未使用继承机制来让派生类决定需要实例化的类。
 
-实际使用中，我们也可能会把***getDate方法***设置成静态方法，有人会称这种模式为***静态方法模式***，但由于上述原因，它只能被称为***静态构建方法***。
+**_getDate 方法_**并非**_工厂方法_**，而仅能称为**_构建方法_**。因为它并未使用继承机制来让派生类决定需要实例化的类。
+
+实际使用中，我们也可能会把**_getDate 方法_**设置成静态方法，有人会称这种模式为**_静态方法模式_**，但由于上述原因，它只能被称为**_静态构建方法_**。
 
 ## 建造者模式(Builder)
+
 ### 场景描述
-我们有一个宇宙飞船销售网站，有基础款、中级款、高级款可供选择，三者的功能依次变多。同时提供了复古风格、现代风格、像素风格，也即一共有9种不同的组合方式。除此之外，我们还需要初始化一串文本用于描述这款车，比如在为飞船添加全景天窗时，在此文本中添加“全景天窗”的描述信息。描述文本有可能被单独获取而无需初始化飞船对象。已知Spacecraft类的初始化过程较为复杂（需要初始化框架、发动机等部件），同时我们完全有可能增加更多的款型和风格，新增款型时也需要能够生成对应的描述信息.我们应该如何组织代码以实例化Spacecraft对象和String类型的描述信息？
+
+我们有一个宇宙飞船销售网站，有基础款、中级款、高级款可供选择，三者的功能依次变多。同时提供了复古风格、现代风格、像素风格，也即一共有 9 种不同的组合方式。除此之外，我们还需要初始化一串文本用于描述这款车，比如在为飞船添加全景天窗时，在此文本中添加“全景天窗”的描述信息。描述文本有可能被单独获取而无需初始化飞船对象。已知 Spacecraft 类的初始化过程较为复杂（需要初始化框架、发动机等部件），同时我们完全有可能增加更多的款型和风格，新增款型时也需要能够生成对应的描述信息.我们应该如何组织代码以实例化 Spacecraft 对象和 String 类型的描述信息？
 
 ### 思路
-1. 我们实例化Spacecraft时，每为其添加一个属性，需要也在文本描述中添加对应的功能描述，二者的构建过程似乎是完全一样的。
-2. 我们尝试用一个抽象的Builder概念作为它们的接口，来描述整个构建过程的步骤。
-``` Java
+
+1. 我们实例化 Spacecraft 时，每为其添加一个属性，需要也在文本描述中添加对应的功能描述，二者的构建过程似乎是完全一样的。
+2. 我们尝试用一个抽象的 Builder 概念作为它们的接口，来描述整个构建过程的步骤。
+
+```Java
 public interface SpacecraftBuilder {
     public void createEngine();
 
     public void createCruiseControl();
 
     public void createPanoramicRoof();
-    
+
     ...
 }
 ```
-3. 基础款、中级款的差别在于建造所调用的步骤数量不同，比如初级款就不调用createPanoramicRoof方法。所以上述接口的实现类应当是复古风格、现代风格等的构建者和描述构建者。
-``` Java
+
+3. 基础款、中级款的差别在于建造所调用的步骤数量不同，比如初级款就不调用 createPanoramicRoof 方法。所以上述接口的实现类应当是复古风格、现代风格等的构建者和描述构建者。
+
+```Java
 public class DescBuilder implements SpacecraftBuilder {
     StringBuilder desc = new StringBuilder();
 
@@ -268,9 +313,9 @@ public class DescBuilder implements SpacecraftBuilder {
     public void createPanoramicRoof() {
         desc.append("全景天窗 ");
     }
-        
+
     ...
-    
+
     public String getDesc() {
         return this.desc.toString();
     }
@@ -294,16 +339,18 @@ public class RetroStyleBuilder implements SpacecraftBuilder {
     public void createPanoramicRoof() {
         spacecraft.setPanoramicRoof(new FlowerBenedPanoramicRoof());
     }
-    
+
     ...
-    
+
     public Spacecraft getSpacecraft() {
         return this.spacecraft;
     }
 }
 ```
+
 4. 我们已经具备了所有建造全部款型需要的功能。最后需要做的是为不同的款型和描述文档组装对应的部件。我们新增一个类来管理整个构建流程。
-``` Java
+
+```Java
 public class Director {
     private SpacecraftBuilder builder;
 
@@ -334,25 +381,30 @@ public static void main(String[] args) {
 
     DescBuilder descBuilder = new DescBuilder();
     new Director(builder).buildAdvancedModel();
-    String desc = descBuilder.getDesc(); // 定速巡航 全景天窗 
+    String desc = descBuilder.getDesc(); // 定速巡航 全景天窗
 }
 ```
-5. 当我们需要新增风格时或者HTML格式的描述信息时，新增Builder的实现类即可。当我们需要新增车型时，在Director中新增create方法并调用需要组装的功能即可。
+
+5. 当我们需要新增风格时或者 HTML 格式的描述信息时，新增 Builder 的实现类即可。当我们需要新增车型时，在 Director 中新增 create 方法并调用需要组装的功能即可。
 
 ### 模式
-我们将它称为***建造者模式***。
+
+我们将它称为**_建造者模式_**。
 
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dd60aafb78784874a55fcd216e3d3666~tplv-k3u1fbpfcp-watermark.image?)
 
-其关联于***模版模式***。
+其关联于**_模版模式_**。
 
 ### 问题
-1. 我们为什么不将Director中的方法直接放入Builder这个父类中而要新增一个类来统筹组装过程？
+
+1. 我们为什么不将 Director 中的方法直接放入 Builder 这个父类中而要新增一个类来统筹组装过程？
 2. 与链式调用到底是何关系？
 
 ### 混淆
+
 如果没有组装**描述文本**的需求，我们完全可以将不同风格纳入抽象工厂模式管理，由子类返回对应风格所使用的引擎、天窗等信息。使用如下：
-``` Java
+
+```Java
 public class SpacecraftBuilder {
     Spacecraft spacecraft = new Spacecraft();
     // 抽象工厂
@@ -380,17 +432,22 @@ public class SpacecraftBuilder {
     }
 }
 ```
-Builder将不再被纳入继承体系。但这样做的前提是不同风格间的各组件拼凑过程几乎相同，比如如果在为复古风添加全景天窗时，还需要为前挡风玻璃添加花边而其他风格则不用。这样的细微差别在少的情况下倒还能忍受，但一旦数量多了就会使代码陷入混乱，也即需要使用***建造者模式***。
 
-抽象工厂模式往往用于直接创建***一个继承体系下***的某个具体对象并即刻返回，更像是在生产一系列相关对象。而我们以上使用中却在组合对象，即我们在一步步实例化各种组件并添加到飞船中以组装一个复杂对象，并且我们更关心整个对象的拼凑过程。
+Builder 将不再被纳入继承体系。但这样做的前提是不同风格间的各组件拼凑过程几乎相同，比如如果在为复古风添加全景天窗时，还需要为前挡风玻璃添加花边而其他风格则不用。这样的细微差别在少的情况下倒还能忍受，但一旦数量多了就会使代码陷入混乱，也即需要使用**_建造者模式_**。
+
+抽象工厂模式往往用于直接创建**_一个继承体系下_**的某个具体对象并即刻返回，更像是在生产一系列相关对象。而我们以上使用中却在组合对象，即我们在一步步实例化各种组件并添加到飞船中以组装一个复杂对象，并且我们更关心整个对象的拼凑过程。
 
 ## 原型模式(Prototype)
+
 ### 场景描述
+
 现有一个对象，里面存储了用户传上来的请求体信息，我们将用该对象并行的发送给用户服务和日志服务，但我们不希望用户服务对该对象的更改影响到日志服务对整个原始请求体的保存，也即我们想要复制这个对象。
 
 ### 思路
-1. Java用户，只需要实现Clonale接口并实现clone方法即可快速完整浅拷贝工作。
-``` Java
+
+1. Java 用户，只需要实现 Clonale 接口并实现 clone 方法即可快速完整浅拷贝工作。
+
+```Java
 public class CanBeCloneable implements Cloneable {
     private String username;
     @Override
@@ -399,20 +456,26 @@ public class CanBeCloneable implements Cloneable {
     }
 }
 ```
-2. 如果是深拷贝，我们需要在实现clone时，递归调用对象***引用数据类型的属性***的clone方法并赋值给super.clone()的返回值。
+
+2. 如果是深拷贝，我们需要在实现 clone 时，递归调用对象**_引用数据类型的属性_**的 clone 方法并赋值给 super.clone()的返回值。
 
 ### 模式
-这就是原型模式，我们为一个类实现克隆接口并提供clone方法，以使该类的实例可以被克隆出多个一样的对象。
+
+这就是原型模式，我们为一个类实现克隆接口并提供 clone 方法，以使该类的实例可以被克隆出多个一样的对象。
 
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bd176c9ca4524a2ab1868bda6164942b~tplv-k3u1fbpfcp-watermark.image?)
 
 ## 单例模式(Singleton)
+
 ### 场景表述
-现有一个Property类，当其实例化时会读取配置文件并为自身的属性赋值。我们不想要每次获取配置时，都实例化该类，因为这会不停的读取配置文件，而这是十分缓慢的。
+
+现有一个 Property 类，当其实例化时会读取配置文件并为自身的属性赋值。我们不想要每次获取配置时，都实例化该类，因为这会不停的读取配置文件，而这是十分缓慢的。
 
 ### 思路
-1. 全局维护一个该类的实例，每次获取Property类时都返回同一个实例。所以我们的实现如下：
-``` Java
+
+1. 全局维护一个该类的实例，每次获取 Property 类时都返回同一个实例。所以我们的实现如下：
+
+```Java
 public class Property {
     private static Property instance = null;
     private final String applicationName;
@@ -430,8 +493,10 @@ public class Property {
     }
 }
 ```
-2. 在多线程环境中，getInstance方法需要做同步处理，常规方法是使用[双重检查锁](https://zh.wikipedia.org/wiki/双重检查锁定模式)机制以兼顾性能与正确性。
-```
+
+2. 在多线程环境中，getInstance 方法需要做同步处理，常规方法是使用[双重检查锁](https://zh.wikipedia.org/wiki/双重检查锁定模式)机制以兼顾性能与正确性。
+
+```Java
 public class Property {
     // 实例化过程中需要阻止重排序，故必须将属性设置为volatile。
     private volatile static Property instance = null;
@@ -456,8 +521,10 @@ public class Property {
     }
 }
 ```
-3. Java的静态变量其实自带了延迟加载功能，如下并不会在系统初始化时实例化ApplicationInfo而会延迟到调用Property的方法时才初始化。
-``` Java
+
+3. Java 的静态变量其实自带了延迟加载功能，如下并不会在系统初始化时实例化 ApplicationInfo 而会延迟到调用 Property 的方法时才初始化。
+
+```Java
 public class ApplicationInfo {
     private String name;
 
@@ -497,18 +564,25 @@ public class Main {
  * Hello
  */
 ```
+
 ### 模式
+
 至此，我们就认识了单例模式。
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0f39fde95c8a4a67bf1f7fe582beb024~tplv-k3u1fbpfcp-watermark.image?)
 
 # 结构型模式(Structural Patterns)
+
 ## 适配器模式(Adapter)
+
 ### 场景描述
-你有一份老配置文件以及读取这份配置的OldProperty类，你还有一份新配置以及读取这份配置的NewProperty类。已知新老配置大多是改了配置的字段名以及配置格式，如何才能在系统过度阶段，让OldProperty也能像NewProperty一样被新系统使用？
+
+你有一份老配置文件以及读取这份配置的 OldProperty 类，你还有一份新配置以及读取这份配置的 NewProperty 类。已知新老配置大多是改了配置的字段名以及配置格式，如何才能在系统过度阶段，让 OldProperty 也能像 NewProperty 一样被新系统使用？
 
 ### 思路
-1. 创建一个中间类，实现NewProperty的接口并使用OldProperty类提供具体数据。
-``` Java
+
+1. 创建一个中间类，实现 NewProperty 的接口并使用 OldProperty 类提供具体数据。
+
+```Java
 public class OldProperty implements OldPropertyInterface {
     private String applicationName;
 
@@ -541,42 +615,53 @@ public class PropertyAdapter implements NewPropertyInterface  {
 }
 
 ```
+
 ### 模式
+
 这个中间类及称为适配器，而这种解决方案称为适配器模式。其为两个不兼容的接口提供了兼容的访问方式。
 
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/62a34ab745d54d05936c36f3a8686bc3~tplv-k3u1fbpfcp-watermark.image?)
 
 ## 桥接模式(Bridge)
+
 ### 场景描述
-你有一个User类，它可以保存数据到Mysql中，也可以保存数据到PostgreSQL中。它可以使用阿里云服务发送短信，也可以通过腾讯云服务发送短信。
+
+你有一个 User 类，它可以保存数据到 Mysql 中，也可以保存数据到 PostgreSQL 中。它可以使用阿里云服务发送短信，也可以通过腾讯云服务发送短信。
 
 ### 思路
-1. 我们不可能创建“MysqlUser”或者“AliUser”甚至于“AliMysqlUser”，似乎更应该参考***合成复用原则***来组合各个类。
-![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e62deed8e94741bd84908c5b17eec666~tplv-k3u1fbpfcp-watermark.image?)
+
+1. 我们不可能创建“MysqlUser”或者“AliUser”甚至于“AliMysqlUser”，似乎更应该参考**_合成复用原则_**来组合各个类。
+   ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e62deed8e94741bd84908c5b17eec666~tplv-k3u1fbpfcp-watermark.image?)
 
 ### 模式
-此模式强调将一个类或一系列紧密相连的类分为抽象和实现两个部分。抽象部分主要完成业务的抽象操作，比如save、send操作，而实现部分则进行具体的实现并提供给抽象部分调用，比如将save的数据保存到MySQL。
+
+此模式强调将一个类或一系列紧密相连的类分为抽象和实现两个部分。抽象部分主要完成业务的抽象操作，比如 save、send 操作，而实现部分则进行具体的实现并提供给抽象部分调用，比如将 save 的数据保存到 MySQL。
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/30357a8bc701479f8debc3db77d8c4a5~tplv-k3u1fbpfcp-watermark.image?)
 
 ## 享元模式(Flyweight)
+
 ### 场景描述
-现有一个活动信息类Activity，里面除了活动名称、开始时间、结束时间等***静态信息***外，还包含用户信息等***动态信息***，因为当调用getRewards方法获取活动奖品信息时需要根据个人信息计算具体数值，也就是说每个用户针对每一个活动都需要专门实例化一个活动对象。已知除个人信息外的其他信息占用了该类总存储大小的99.99%，请问该如何优化内存。
+
+现有一个活动信息类 Activity，里面除了活动名称、开始时间、结束时间等**_静态信息_**外，还包含用户信息等**_动态信息_**，因为当调用 getRewards 方法获取活动奖品信息时需要根据个人信息计算具体数值，也就是说每个用户针对每一个活动都需要专门实例化一个活动对象。已知除个人信息外的其他信息占用了该类总存储大小的 99.99%，请问该如何优化内存。
 
 ### 思路
-1. 静态信息就让它静下来吧，既然它不可变，就用***单例模式***管理起来，全局就只有一份且不可更改。
-2. 多个活动间的单例我们需要根据活动名称进行缓存，所以可配合***简单工厂模式***或***静态的工厂方法***使用。
-3. 内部不再维护个人信息字段，该字段在调用getRewards时由外部传入，这样此类就仅包含静态信息了。
-4. 如有需要，可以新建一个类存储个人信息，并引用共享的Activity单例对象。
+
+1. 静态信息就让它静下来吧，既然它不可变，就用**_单例模式_**管理起来，全局就只有一份且不可更改。
+2. 多个活动间的单例我们需要根据活动名称进行缓存，所以可配合**_简单工厂模式_**或**_静态的工厂方法_**使用。
+3. 内部不再维护个人信息字段，该字段在调用 getRewards 时由外部传入，这样此类就仅包含静态信息了。
+4. 如有需要，可以新建一个类存储个人信息，并引用共享的 Activity 单例对象。
 
 ### 模式
-我们常认为对象包含***内部状态***和***外部状态***，二者分别与上述的***静态信息***和***动态信息***相对应。
+
+我们常认为对象包含**_内部状态_**和**_外部状态_**，二者分别与上述的**_静态信息_**和**_动态信息_**相对应。
 
 当内部状态的存储用量远远高于外部状态，或者某一个类需要大量被创建时，可以考虑提取内部状态并为具有相同内部状态的实例提供单例、共享访问的方式。
 
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6ca7cc2315994086a650451b51d8948c~tplv-k3u1fbpfcp-watermark.image?)
 
-这就是享元模式，在Java中，基础数据类型的封装类也采用了享元模式进行优化，如常量池的使用。
-```
+这就是享元模式，在 Java 中，基础数据类型的封装类也采用了享元模式进行优化，如常量池的使用。
+
+```Java
 public class Main {
     public static void main(String[] args) {
         String s1 = new String("HI, WHAT'S UP");    // 手动实例化时将不参与共享
@@ -595,38 +680,49 @@ public class Main {
     }
 }
 ```
+
 ## 外观模式(Facede)
+
 ### 模式
-为复杂的系统提供一个简单、统一的接口供上层使用，令上层无需与其复杂的系统内部进行交互。 
+
+为复杂的系统提供一个简单、统一的接口供上层使用，令上层无需与其复杂的系统内部进行交互。
 
 ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/df4cc9d3fa5e4adcb9e528490ccce4c1~tplv-k3u1fbpfcp-watermark.image?)
 
 ## 组合模式(Composite)
+
 ### 场景描述
+
 现有一种商品礼包，其可能包含一些具体商品和另一个商品礼包。请设计数据结构并提供计算所有具体总价值的方法。
 
 ### 思路
+
 1. 首先，商品礼包其实也可以理解为一个商品拥有其价值。所以设计以下继承体系。
-![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a0aa92e0980e4342a245a94ee32c78dc~tplv-k3u1fbpfcp-watermark.image?)
-2. GoodPack的getPrice方法中将调用children中的所有对象的getPrice方法并计算求和返回。
+   ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a0aa92e0980e4342a245a94ee32c78dc~tplv-k3u1fbpfcp-watermark.image?)
+2. GoodPack 的 getPrice 方法中将调用 children 中的所有对象的 getPrice 方法并计算求和返回。
 
 ### 模式
+
 这种将对象组装成树形结构并且可以如同普通对象一样使用组合对象的模式被称为组合模式。
 
-同时，我们也可以将非叶子结点所特有的属性和方法（如children属性，addChild方法）也加入到父类（或接口）中，但这样树形结构将不再透明，上层也需知晓树形结构的存在。在实际中使用中需根据情况灵活使用。
+同时，我们也可以将非叶子结点所特有的属性和方法（如 children 属性，addChild 方法）也加入到父类（或接口）中，但这样树形结构将不再透明，上层也需知晓树形结构的存在。在实际中使用中需根据情况灵活使用。
 
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7d89f54dc12f464687ff1a0d5db92838~tplv-k3u1fbpfcp-watermark.image?)
 
 ## 装饰模式(Decorator)
+
 ### 场景描述
-我们现在拥有一个类Shop及其实现的接口，它提供了获取商品于购买商品的功能。但VIP用户需要返回一个特别的Shop，它的商品将更多。需求还不止于此，对于老用户，我们需要增加商品数量并降低价格，对于经常从未付费的用户需要降低商品数量并降低价格。而一个用户完全可能是从未付费的老的VIP用户。
+
+我们现在拥有一个类 Shop 及其实现的接口，它提供了获取商品于购买商品的功能。但 VIP 用户需要返回一个特别的 Shop，它的商品将更多。需求还不止于此，对于老用户，我们需要增加商品数量并降低价格，对于经常从未付费的用户需要降低商品数量并降低价格。而一个用户完全可能是从未付费的老的 VIP 用户。
 
 ### 思路
+
 1. 我们现为从未付费、VIP、老用户三类创建子类，并复写相应方法进行数据的增减。
-2. 现在我们的问题变成了如何为满足以上两个或者三个条件的用户组装一个Shop出来。这时我们可以考虑组合的方式连接多个类。
-![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/679d10ce84da4dc5aa9c01f4fea62292~tplv-k3u1fbpfcp-watermark.image?)
-3. Decorator的派生类则调用shop的getGoodPrice和getGoodValue方法来获取经过层层处理后的结果并进一步进行处理。
-``` Java
+2. 现在我们的问题变成了如何为满足以上两个或者三个条件的用户组装一个 Shop 出来。这时我们可以考虑组合的方式连接多个类。
+   ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/679d10ce84da4dc5aa9c01f4fea62292~tplv-k3u1fbpfcp-watermark.image?)
+3. Decorator 的派生类则调用 shop 的 getGoodPrice 和 getGoodValue 方法来获取经过层层处理后的结果并进一步进行处理。
+
+```Java
 public class Shop implements ShopInterface {
     public int getGoodValue() {
         return 100;
@@ -720,21 +816,26 @@ public class Main {
     }
 }
 ```
+
 ### 模式
-此模式与***组合模式***有相似之处。
 
-在结构上，***组合模式***中，一个包装类包含多个同一继承体系下的子类，为树形结构。而在***装饰模式***中，一个装饰类仅包含一个同一继承体系下的子类，可以理解为链式结构。
+此模式与**_组合模式_**有相似之处。
 
-在业务逻辑上，***组合模式***中叶子结点完成了大部分的实际工作，包装类只做一些统计与分发，二者是不平等的业务角色。***装饰模式***中所有结点都在完成各自特有的业务逻辑，属于在增强业务功能，互相是平等的业务角色。
+在结构上，**_组合模式_**中，一个包装类包含多个同一继承体系下的子类，为树形结构。而在**_装饰模式_**中，一个装饰类仅包含一个同一继承体系下的子类，可以理解为链式结构。
+
+在业务逻辑上，**_组合模式_**中叶子结点完成了大部分的实际工作，包装类只做一些统计与分发，二者是不平等的业务角色。**_装饰模式_**中所有结点都在完成各自特有的业务逻辑，属于在增强业务功能，互相是平等的业务角色。
 
 ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a9f5279bcf1746e9a37f2ae5df51533c~tplv-k3u1fbpfcp-watermark.image?)
 
 ## 代理模式(Proxy)
+
 ### 场景描述
-我们有一个MysqlDao底层类，提供了增删改查方法。我们希望为它添加打印日志的功能，即增删改查时打印操作信息。由于是底层类，你无法直接修改它。
+
+我们有一个 MysqlDao 底层类，提供了增删改查方法。我们希望为它添加打印日志的功能，即增删改查时打印操作信息。由于是底层类，你无法直接修改它。
 
 ### 思路
-1. 既然无法修改，那就把它包起来。新增一个类基础MysqlDao实现的所有类和接口，然后将实际的操作委托给内部维护的MysqlDao实例，并在转发前后打上日志即可。
+
+1. 既然无法修改，那就把它包起来。新增一个类基础 MysqlDao 实现的所有类和接口，然后将实际的操作委托给内部维护的 MysqlDao 实例，并在转发前后打上日志即可。
 
 ### 模式
 
@@ -742,64 +843,81 @@ public class Main {
 
 我们称这个新增的类为代理类，称这种解决方案为代理模式。
 
-它和***装饰器模式***很像，都是基于组合原则，包装一个类然后进行转发并添加一些额外的操作，
+它和**_装饰器模式_**很像，都是基于组合原则，包装一个类然后进行转发并添加一些额外的操作，
 
 但二者的意图不同。装饰器的层层装饰是客户端可随意组合的，用于功能增强。但代理模式往往希望外部直接使用代理类，其增加的功能一般与业务无关。
 
-它也不同于***外观模式***，外观模式需要暴露更少的接口以隐藏复杂的内部结构，而代理类与其代理对象遵循同一接口。
+它也不同于**_外观模式_**，外观模式需要暴露更少的接口以隐藏复杂的内部结构，而代理类与其代理对象遵循同一接口。
 
 # 行为模式(Behavioral Design Patterns)
+
 ## 责任链模式(Chain of Responsibility)
+
 ### 场景描述
-你又有一个MysqlDao底层类，提供了查数据的方法。现在你需要为它提供可选的两级缓存功能，即本地缓存、Redis缓存，任意缓存被命中时直接返回数据。按照惯例，因为它是底层类，你无法直接修改它。
+
+你又有一个 MysqlDao 底层类，提供了查数据的方法。现在你需要为它提供可选的两级缓存功能，即本地缓存、Redis 缓存，任意缓存被命中时直接返回数据。按照惯例，因为它是底层类，你无法直接修改它。
 
 ### 思路
-1. 好像***代理模式***也能用，但我们并不期待客户端都使用缓存功能，并且这似乎也已经涉及到具体业务修改，再者如果以后需要提供三级四级缓存则需要不断的修改代理类，这对开闭原则并不友好。
-2. ***装饰器模式***是个很好的选择，一级二级缓存层层包装，且可以选择性的使用本地缓存、Redis缓存或两者都使用。
-![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d526ef3895bb405684bbf4671778bc2f~tplv-k3u1fbpfcp-watermark.image?)
-3. CacheDao的next均指向下一个处理的DAO，如果当前未发现缓存，则将请求转发给next类，直到最后到达MysqlDao。但如果发现了缓存，则不再转发直接返回。
+
+1. 好像**_代理模式_**也能用，但我们并不期待客户端都使用缓存功能，并且这似乎也已经涉及到具体业务修改，再者如果以后需要提供三级四级缓存则需要不断的修改代理类，这对开闭原则并不友好。
+2. **_装饰器模式_**是个很好的选择，一级二级缓存层层包装，且可以选择性的使用本地缓存、Redis 缓存或两者都使用。
+   ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d526ef3895bb405684bbf4671778bc2f~tplv-k3u1fbpfcp-watermark.image?)
+3. CacheDao 的 next 均指向下一个处理的 DAO，如果当前未发现缓存，则将请求转发给 next 类，直到最后到达 MysqlDao。但如果发现了缓存，则不再转发直接返回。
+
 ### 模式
-注意，这里我们多了一个阻断操作，也即某一个中间类发现我能处理，则不再向下传递。这一点不是***装饰器模式***的初衷，装饰器模式是用于拓展、增强行为，但核心功能还是由原始类完成或参与。
+
+注意，这里我们多了一个阻断操作，也即某一个中间类发现我能处理，则不再向下传递。这一点不是**_装饰器模式_**的初衷，装饰器模式是用于拓展、增强行为，但核心功能还是由原始类完成或参与。
 
 ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e56e6622a4d748b09a9e580d81aded9d~tplv-k3u1fbpfcp-watermark.image?)
-这种模式称为职责链模式，若我们需要为HTTP请求添加“IP限制”、“请求频率限制”、“登录校验”等功能时就可以使用此模式。
-
+这种模式称为职责链模式，若我们需要为 HTTP 请求添加“IP 限制”、“请求频率限制”、“登录校验”等功能时就可以使用此模式。
 
 ## 备忘录模式(Memento)
+
 ### 场景描述
-现在有象棋游戏逻辑类ChessGame和UI渲染层的ChessFrame类，你需要记录每次操作并提供无限次数的悔棋功能。
+
+现在有象棋游戏逻辑类 ChessGame 和 UI 渲染层的 ChessFrame 类，你需要记录每次操作并提供无限次数的悔棋功能。
 
 ### 思路
-1. 我们在每次操作时，需要记录当时的棋子布局等游戏信息。而此操作应由ChessGame进行，因为只有它知晓有哪些内部信息需要被存储。
-2. 产生的游戏信息我们新增一个类Snapshot来存储。而我们希望这些快照信息的维护交由一个专门的Caretaker类维护以使ChessGame仅需提供创建快照和根据快照恢复游戏两个功能即可。
-3. 当悔棋时，ChessFrame触发Caretaker的恢复功能，调用ChessGame的restore方法并传入最近的一次快照，使恢复上一次操作前的状态。
+
+1. 我们在每次操作时，需要记录当时的棋子布局等游戏信息。而此操作应由 ChessGame 进行，因为只有它知晓有哪些内部信息需要被存储。
+2. 产生的游戏信息我们新增一个类 Snapshot 来存储。而我们希望这些快照信息的维护交由一个专门的 Caretaker 类维护以使 ChessGame 仅需提供创建快照和根据快照恢复游戏两个功能即可。
+3. 当悔棋时，ChessFrame 触发 Caretaker 的恢复功能，调用 ChessGame 的 restore 方法并传入最近的一次快照，使恢复上一次操作前的状态。
 
 ### 模式
+
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bfd83a9f5a40406eaa30c6cd32043098~tplv-k3u1fbpfcp-watermark.image?)
 
 ## 命令模式(Command)
+
 ### 场景描述
-现在你是一个游戏开发者，界面上有很多建筑Building对象并提供了一些诸如设置外观、设置描述文本、设置倒计时等基本功能可供调用。我们希望提供多种功能（比如升级建筑、查看建筑等），调用不同功能时，会给Building设置不同的外观、描述、倒计时等，而不同的事件可能会调用相同或不同的功能。
+
+现在你是一个游戏开发者，界面上有很多建筑 Building 对象并提供了一些诸如设置外观、设置描述文本、设置倒计时等基本功能可供调用。我们希望提供多种功能（比如升级建筑、查看建筑等），调用不同功能时，会给 Building 设置不同的外观、描述、倒计时等，而不同的事件可能会调用相同或不同的功能。
 
 ### 思路
-1. 我们完全可以在Building中添加upgrade、view等方法以提供这些功能。但我们发现这些功能都是对于基本功能的集成且很容易变更相关需求，所以考虑使用另一个类来调用Building的基本功能。
+
+1. 我们完全可以在 Building 中添加 upgrade、view 等方法以提供这些功能。但我们发现这些功能都是对于基本功能的集成且很容易变更相关需求，所以考虑使用另一个类来调用 Building 的基本功能。
 2. 我们把每一个功能都用一个单独的类来表示，以在添加或删除功能时，只需要新增或删除这些功能类即可。
-![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/411bad51c8354ec59fc391e78a91b2eb~tplv-k3u1fbpfcp-watermark.image?)
+   ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/411bad51c8354ec59fc391e78a91b2eb~tplv-k3u1fbpfcp-watermark.image?)
 
 ### 模式
+
 ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e360418021fd4fcd9589f96a3071597c~tplv-k3u1fbpfcp-watermark.image?)
-如果你希望在一众零散基础功能基础上组装多样化的操作命令则可以使用***命令模式***。有撤销操作需求，我们也可以在Command中添加revert方法，以保证do与revert的逻辑被放在一起。也可以与***备忘录***模式配合使用实现历史命令的缓存。
+如果你希望在一众零散基础功能基础上组装多样化的操作命令则可以使用**_命令模式_**。有撤销操作需求，我们也可以在 Command 中添加 revert 方法，以保证 do 与 revert 的逻辑被放在一起。也可以与**_备忘录_**模式配合使用实现历史命令的缓存。
 
 ## 状态模式(State)
+
 ### 场景描述
-现在你是一个游戏开发者，界面上有很多建筑Building对象处于不同的状态（正常、修建中、拆除中等n种）。而建筑有建造、拆除、查看等功能可供调用。问题在于当建筑处于不同的状态时，可执行的操作不尽相同。比如修建中的建筑将不能执行建造、升级等操作。你会如何设计Building类使其满足以上需求？
+
+现在你是一个游戏开发者，界面上有很多建筑 Building 对象处于不同的状态（正常、修建中、拆除中等 n 种）。而建筑有建造、拆除、查看等功能可供调用。问题在于当建筑处于不同的状态时，可执行的操作不尽相同。比如修建中的建筑将不能执行建造、升级等操作。你会如何设计 Building 类使其满足以上需求？
 
 ### 思路
-1. 第一反应可能会是在Building的建造、拆除、升级方法中添加状态的判断。
-``` Java
+
+1. 第一反应可能会是在 Building 的建造、拆除、升级方法中添加状态的判断。
+
+```Java
 public class Building {
     private String state;
-    
+
     public void build() {
         if (!state.equals("NORMAL")) return;
         state = "BUILDING";
@@ -811,7 +929,7 @@ public class Building {
         state = "REMOVING";
         System.out.println("To state: removing");
     }
-    
+
     public void display() {
         System.out.println("Building Name: Tower");
     }
@@ -825,10 +943,12 @@ public class Building {
     }
 }
 ```
-2. 这看起来不太整洁，整理逻辑也会很麻烦。我们可以尝试把state做成类State并把与状态相关的建筑操作转发给State，然后派生出不同的建筑状态，而该状态能执行的操作则反过来调用Building的方法进行实现，如此一来，建筑处于什么状态时可以执行哪些操作便一目了然。
-3. 同时，不要忘了在执行了某些操作之后实例化新的状态类并赋值给Building的state属性。
-![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6e6f84a873ed4dce93c1b522e133159c~tplv-k3u1fbpfcp-watermark.image?)
-``` Java
+
+2. 这看起来不太整洁，整理逻辑也会很麻烦。我们可以尝试把 state 做成类 State 并把与状态相关的建筑操作转发给 State，然后派生出不同的建筑状态，而该状态能执行的操作则反过来调用 Building 的方法进行实现，如此一来，建筑处于什么状态时可以执行哪些操作便一目了然。
+3. 同时，不要忘了在执行了某些操作之后实例化新的状态类并赋值给 Building 的 state 属性。
+   ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6e6f84a873ed4dce93c1b522e133159c~tplv-k3u1fbpfcp-watermark.image?)
+
+```Java
 public class Building {
     protected State state;
 
@@ -847,12 +967,12 @@ public class Building {
     public void info() {
         state.info();
     }
-    
+
     // 真正的建造逻辑
     public void doBuild() {
         System.out.println("build now");
     }
-    
+
      // 真正的拆除逻辑
     public void doRemove() {
         System.out.println("remove now");
@@ -928,22 +1048,28 @@ public class RemovingState extends State {
     }
 }
 ```
+
 ### 模式
+
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ea62eb8248d94ea5ad584f71e62caf86~tplv-k3u1fbpfcp-watermark.image?)
 在有限的状态中，我们可以使用此模式进行循环的转换并在不同的状态执行不同的操作，称为状态模式。
 
 ## 访问者模式(Visitor)
+
 ### 场景描述
-你现在是一个游戏开发者，界面上有很多建筑处于不同的状态（正常、修建中、拆除中等n种）。我们有多种操作可能被触发（鼠标左键点击、鼠标右键点击、手指点击、手指双击等m种），对不同状态的建筑进行不同的操作会调用对应状态类的不同方法。如何统筹这复杂的n*m种调用关系？
+
+你现在是一个游戏开发者，界面上有很多建筑处于不同的状态（正常、修建中、拆除中等 n 种）。我们有多种操作可能被触发（鼠标左键点击、鼠标右键点击、手指点击、手指双击等 m 种），对不同状态的建筑进行不同的操作会调用对应状态类的不同方法。如何统筹这复杂的 n\*m 种调用关系？
 
 ### 思路
-1. 首先我们会用***状态模式***来管理所有状态，也即所有的建筑状态均继承自一个父类State，建筑类中有一个State类型的属性表示该建筑的状态。
-2. 这似乎可以在不同的状态类中分别添加m种函数对应不同的操作。但这有一些小问题，每当我们需要添加或删除一种操作时，都需要修改n个状态类。同时，事件的触发和房屋的**功能逻辑**在一定程度上是耦合的。
-3. 那就建立m个事件类吧，并提供n个同名函数利用多态对应不同的建筑状态下触发此事件。
-4. 对于C#、Groovy等支持[多分派]('https://zh.wikipedia.org/wiki/多分派')的语言，我们已经实现了***访问者模式***。
-5. 对于C、Java等语言，还有一个问题可能需要到实际开发时才会发现。当我们向一个建筑触发一个状态相关的事件时，我们只能拿到一个State类型的值，而不是具体的状态子类。那我们在第二步中的通过建筑状态调用不同的函数如何实现呢？
+
+1. 首先我们会用**_状态模式_**来管理所有状态，也即所有的建筑状态均继承自一个父类 State，建筑类中有一个 State 类型的属性表示该建筑的状态。
+2. 这似乎可以在不同的状态类中分别添加 m 种函数对应不同的操作。但这有一些小问题，每当我们需要添加或删除一种操作时，都需要修改 n 个状态类。同时，事件的触发和房屋的**功能逻辑**在一定程度上是耦合的。
+3. 那就建立 m 个事件类吧，并提供 n 个同名函数利用多态对应不同的建筑状态下触发此事件。
+4. 对于 C#、Groovy 等支持[多分派]('https://zh.wikipedia.org/wiki/多分派')的语言，我们已经实现了**_访问者模式_**。
+5. 对于 C、Java 等语言，还有一个问题可能需要到实际开发时才会发现。当我们向一个建筑触发一个状态相关的事件时，我们只能拿到一个 State 类型的值，而不是具体的状态子类。那我们在第二步中的通过建筑状态调用不同的函数如何实现呢？
 6. 好像需要这样：
-``` Java
+
+```Java
 public abstract class Event {
     public void doFor(State state) {
         if (state instanceof NormalState) {
@@ -957,7 +1083,7 @@ public abstract class Event {
     public abstract void doFor(NormalState state);
 
     public abstract void doFor(BuildingState state);
-    
+
     ...
 }
 
@@ -969,7 +1095,7 @@ public class ClickEvent extends Event {
     public void doFor(BuildingState state) {
         state.info();
     }
-    
+
     ...
 }
 
@@ -980,10 +1106,12 @@ public class main() {
     }
 }
 ```
+
 7. 既然父类帮我们统一做了处理，那问题也不大，但无法否认这是典型的坏味道。
 8. 我们可以通过模拟[多分派]('https://zh.wikipedia.org/wiki/多分派')来优化。
-9. 我们在State类中添加一个新方法accept用来接收Event并代为执行Event::doFor方法，当我们调用accept时，this引用将指向具体的状态子类，我们运行Event.doFor(this)即可实现传入具体状态子类的目标。
-``` Java
+9. 我们在 State 类中添加一个新方法 accept 用来接收 Event 并代为执行 Event::doFor 方法，当我们调用 accept 时，this 引用将指向具体的状态子类，我们运行 Event.doFor(this)即可实现传入具体状态子类的目标。
+
+```Java
 public abstract class Event {
     public abstract void doFor(NormalState state);
 
@@ -1017,34 +1145,41 @@ public class BuildingState extends State {
 // 状态模式中，对state的调用往往需要通过Building类转发
 public class Buillding {
     private State state;
-    
+
     public void accept(Event event) {
         state.accept(evevt);
     }
 }
 ```
-10. 通过这样的转发，我们新增或删除Event时，只需添加或删除对用的Event派生类，而无需续写或删除***instanceof***的条件判断，因为State和Building知晓了Event的存在，在一定程度上这违背***迪米特法则***，却更符合***开闭原则***。
+
+10. 通过这样的转发，我们新增或删除 Event 时，只需添加或删除对用的 Event 派生类，而无需续写或删除**_instanceof_**的条件判断，因为 State 和 Building 知晓了 Event 的存在，在一定程度上这违背**_迪米特法则_**，却更符合**_开闭原则_**。
 
 ### 模式
-这就是访问者模式，Event为访问者，其访问State的方法或变量。事件与业务操作的对应关系由访问者维护，减少了被访者的复杂性。
+
+这就是访问者模式，Event 为访问者，其访问 State 的方法或变量。事件与业务操作的对应关系由访问者维护，减少了被访者的复杂性。
 
 ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/54208f471d0c4f67a3a6e6c7626755cf~tplv-k3u1fbpfcp-watermark.image?)
 
 ### 新需求
+
 如果我们在此场景之下增加”撤回功能“的需求，你会如何实现？
 
 ## 迭代器模式(Iterator)
+
 ### 场景描述
+
 你现在是一个数据挖掘工程师，你维护着数以亿计从微博、微信等挖掘而来的公共账户信息。有多个业务方希望我们提供所有的头像数据供他们使用，如需要所有男性的头像、需要所有女性头像等。你需要提供函数返回对应头像数据给业务方。注意，你仅存储了头像的地址，图片数据需要从网络上进行下载。
 
 ### 思路
-1. 由于数据量巨大（数以亿计的需要下载的图片资源），我们无法简单的返回一个List。
+
+1. 由于数据量巨大（数以亿计的需要下载的图片资源），我们无法简单的返回一个 List。
 2. 我们采用一个一个头像返回的方式，供业务方调用，也即我们自行实现迭代器。
-![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ac53670329fb4be599db8977eec1a394~tplv-k3u1fbpfcp-watermark.image?)
-``` Java
+   ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ac53670329fb4be599db8977eec1a394~tplv-k3u1fbpfcp-watermark.image?)
+
+```Java
 public byte[] next() {
     /**
-     * select account info by invoking methods provided by socialMediae 
+     * select account info by invoking methods provided by socialMediae
      * according this.lastId and this.gender
      */
     AccountInfo nextAccount = ... INVOKE ...
@@ -1053,24 +1188,31 @@ public byte[] next() {
     return avatar;
 }
 ```
-3. 新增的访问逻辑和迭代进度（lastId）在Iterator中维护，我们没有因为此次需求而在AccountManager中添加具体的业务操作（仅添加了迭代器入口），这符合开闭原则。
+
+3. 新增的访问逻辑和迭代进度（lastId）在 Iterator 中维护，我们没有因为此次需求而在 AccountManager 中添加具体的业务操作（仅添加了迭代器入口），这符合开闭原则。
 
 ### 模式
-这便是***迭代器模式***。
+
+这便是**_迭代器模式_**。
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f18873e311b04f13ba4e5ef8e86bdc0f~tplv-k3u1fbpfcp-watermark.image?)
 使用此模式的常用场景包括：
+
 1. 单条数据获取极为耗时，无法一次性全部获取。即：头像数据可以依次下载，无需耗费大量的时间和空间先行下载全部数据后再返回给调用者。
-2. 内部的存储结构比较复杂（如树形、链式结构混合使用等），希望对外界以统一的方式进行遍历。即：我们屏蔽掉了存储的差异性，我们隐藏了数据存储于不同表（甚至于不同DB）的事实。
+2. 内部的存储结构比较复杂（如树形、链式结构混合使用等），希望对外界以统一的方式进行遍历。即：我们屏蔽掉了存储的差异性，我们隐藏了数据存储于不同表（甚至于不同 DB）的事实。
 
 ## 观察者模式(Observer)
+
 ### 场景
-当用户登录时，需要统计昨日简报、推送天气状况、刷新每日奖励等。当VIP即将过期时，需要发送具体过期时间的推送通知、赠送购买优惠券等。如果这样的事件与对应的操作诸多、杂乱、不稳定，请问你会如何设计代码？
+
+当用户登录时，需要统计昨日简报、推送天气状况、刷新每日奖励等。当 VIP 即将过期时，需要发送具体过期时间的推送通知、赠送购买优惠券等。如果这样的事件与对应的操作诸多、杂乱、不稳定，请问你会如何设计代码？
 
 ### 思路
+
 1. 开发前期，事件与操作相对简单明了时，往往可以直接在登录的函数中直接调用统计、推送、刷新等相关函数。但随着二者的对应关系日趋复杂，我们需要更为灵活的设计。
-2. 我们可以使用***订阅/发布机制***，业务自行向自己感兴趣的事件进行订阅，当事件发生时，事件类将调用所有订阅了此事件的方法。
-![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a318056c3c134bdcb4c281d012dbbae7~tplv-k3u1fbpfcp-watermark.image?)
-``` Java
+2. 我们可以使用**_订阅/发布机制_**，业务自行向自己感兴趣的事件进行订阅，当事件发生时，事件类将调用所有订阅了此事件的方法。
+   ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a318056c3c134bdcb4c281d012dbbae7~tplv-k3u1fbpfcp-watermark.image?)
+
+```Java
 public abstract class AbstractEvent {
     private Set<Listener> listeners = new HashSet<>();
 
@@ -1122,20 +1264,20 @@ public static void main(String[] args) {
     event.on(); // NO OUTPUT
 }
 ```
-### 模式
 
+### 模式
 
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/60474ec6580c46408d502852ed05cab0~tplv-k3u1fbpfcp-watermark.image?)
 
 ### 变体
 
-在具体实践中，可以使用一个中间类来维护监听关系、广播事件，而不在父类Event中进行，如Spring中的**ApplicationEventMulticaster**类。因为我们仅仅实例化了一次具体事件类以接受监听器注册，当并发条件下多个用户触发登录事件时，会存在并发问题。
+在具体实践中，可以使用一个中间类来维护监听关系、广播事件，而不在父类 Event 中进行，如 Spring 中的**ApplicationEventMulticaster**类。因为我们仅仅实例化了一次具体事件类以接受监听器注册，当并发条件下多个用户触发登录事件时，会存在并发问题。
 
 上述场景中加入**EventManager**作为中间类时实现如下：
 
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/75987e83bf574b148fe2be70d114c497~tplv-k3u1fbpfcp-watermark.image?)
 
-``` Java
+```Java
 public class EventManager {
     private static Map<Class<? extends Event>, Set<Listener>> listeners = new HashMap();
 
@@ -1163,28 +1305,38 @@ public static void main(String[] args) {
     EventManager.on(new LoginEvent(2000)); // user 2000 login success
 }
 ```
-有人将这种添加了中间类的***观察者模式***称为***订阅/发布模式***，这种做法有待商榷。
+
+有人将这种添加了中间类的**_观察者模式_**称为**_订阅/发布模式_**，这种做法有待商榷。
 
 ## 中介者模式(Mediator)
+
 ### 场景描述
-我们现在有Mysql、Redis、Elasticsearch等多种数据库，我们有一些数据备份的需求。如当存储数据到Mysql时，需要同时存储到Redis、Elasticsearch等多达十几种DB，当存储数据到Elasticsearch时，需要同时存储到Mysql等几种DB。
+
+我们现在有 Mysql、Redis、Elasticsearch 等多种数据库，我们有一些数据备份的需求。如当存储数据到 Mysql 时，需要同时存储到 Redis、Elasticsearch 等多达十几种 DB，当存储数据到 Elasticsearch 时，需要同时存储到 Mysql 等几种 DB。
 
 ### 思路
-1. 我们可以在保存数据到Mysql、Redis、Elasticsearch的函数中，同时操作另外其他DB以进行同步。
-2. 但DB数种类众多，如Mysql工具种将引用多达十几种DB。同时，各DB间的备份流程分布在不同的DB工具中，难以维护。
-3. 考虑使用一个上帝类，管理所有DB，用某种DB存储数据时，告知上帝类，由上帝类来决定需要同时将数据备份到哪些数据库。这样即可解决以上两个问题。
-![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cd221444bc574a58a1e36cbaa2674716~tplv-k3u1fbpfcp-watermark.image?)
+
+1. 我们可以在保存数据到 Mysql、Redis、Elasticsearch 的函数中，同时操作另外其他 DB 以进行同步。
+2. 但 DB 数种类众多，如 Mysql 工具种将引用多达十几种 DB。同时，各 DB 间的备份流程分布在不同的 DB 工具中，难以维护。
+3. 考虑使用一个上帝类，管理所有 DB，用某种 DB 存储数据时，告知上帝类，由上帝类来决定需要同时将数据备份到哪些数据库。这样即可解决以上两个问题。
+   ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cd221444bc574a58a1e36cbaa2674716~tplv-k3u1fbpfcp-watermark.image?)
 
 ### 模式
-***中介者模式***主要为了解决类之间多对多的调用关系，使原本需要与所有相关类交互转变成只需与中介者交互，使出了中间类外的其他类更符合***迪米特法则***和***单一职责原则***。但它的缺点也很明显，中介者需要知晓整个功能所涉及到的所有类，极可能成为[上帝对象](https://zh.wikipedia.org/zh-hans/上帝对象)。
+
+**_中介者模式_**主要为了解决类之间多对多的调用关系，使原本需要与所有相关类交互转变成只需与中介者交互，使出了中间类外的其他类更符合**_迪米特法则_**和**_单一职责原则_**。但它的缺点也很明显，中介者需要知晓整个功能所涉及到的所有类，极可能成为[上帝对象](https://zh.wikipedia.org/zh-hans/上帝对象)。
 
 ## 策略模式(Strategy)
+
 ### 场景描述
-我们需要对一段数据进行加密/解密，而有DES、AES等多种加密方式可供选择。而加密方式存储于用户表中由用户自行决定。当用户请求一个接口时会告知加密方式，你需要解密用户上传的数据并添加部分文字后再加密返回给用户。请问你会如何实现？
+
+我们需要对一段数据进行加密/解密，而有 DES、AES 等多种加密方式可供选择。而加密方式存储于用户表中由用户自行决定。当用户请求一个接口时会告知加密方式，你需要解密用户上传的数据并添加部分文字后再加密返回给用户。请问你会如何实现？
+
 ### 思路
-1. 我们理应提供DESTools、AESTools提供加密/解密方法。
-2. 根据传入的加密方式使用不同的Tools。
-``` Java
+
+1. 我们理应提供 DESTools、AESTools 提供加密/解密方法。
+2. 根据传入的加密方式使用不同的 Tools。
+
+```Java
 public String handle(String ciphertext, EncryptAlgorithm algorithm) {
     String text = null;
     switch (algorithm) {
@@ -1208,8 +1360,10 @@ public String handle(String ciphertext, EncryptAlgorithm algorithm) {
     return resultCiphertext;
 }
 ```
-3. 这似乎难以接受，更恰当的做法是新增公共接口EncryptTools。
-``` Java
+
+3. 这似乎难以接受，更恰当的做法是新增公共接口 EncryptTools。
+
+```Java
 public String handle(String ciphertext, EncryptAlgorithm algorithm) {
     Encryptor encryptor = null;
     switch (algorithm) {
@@ -1225,14 +1379,16 @@ public String handle(String ciphertext, EncryptAlgorithm algorithm) {
 ```
 
 ### 模式
-我们不知不觉中又用到了一种设计模式，即做***策略模式***。不同的加密算法即为不同的策略。
+
+我们不知不觉中又用到了一种设计模式，即做**_策略模式_**。不同的加密算法即为不同的策略。
 
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1c702c636dcc44e3b228e6b5dafafb33~tplv-k3u1fbpfcp-watermark.image?)
 
 ### 延伸
+
 在支持枚举类的语言中，我们往往可以借助枚举来使用**策略模式**，使代码更整洁、简单。
 
-``` Java
+```Java
 public enum EncryptAlgorithm {
     DES {
         @Override
@@ -1255,28 +1411,32 @@ public String handle(String ciphertext, EncryptAlgorithm algorithm) {
     return encryptor.encrypt(encryptor.decrypt(ciphertext) + " by Server");
 }
 ```
-其中***getEncryptor***方法是一个工厂方法。
+
+其中**_getEncryptor_**方法是一个工厂方法。
 
 ## 模版方法(Template Method)
+
 ### 场景描述
-我们有DESTools、AESTools等多个加密工具对应到不同的加密算法。加密/解密均包含多个步骤，如加密步骤包括压缩数据、生成密钥、加密、字节充填等。请问我们应该如何规划这些Tools类的encrypt、decrypt方法？
+
+我们有 DESTools、AESTools 等多个加密工具对应到不同的加密算法。加密/解密均包含多个步骤，如加密步骤包括压缩数据、生成密钥、加密、字节充填等。请问我们应该如何规划这些 Tools 类的 encrypt、decrypt 方法？
 
 ### 思路
-1. 我们可以尝试直接在encrypt方法中按顺序书写所有的加密步骤。
+
+1. 我们可以尝试直接在 encrypt 方法中按顺序书写所有的加密步骤。
 2. 但我们发现，无论何种加密算法，其步骤及顺序均是相同的，直至具体实现不同，甚至压缩数据等操作的具体实现也是一样的。
-3. 我们尝试在公共父类Encryptor中，为各步骤分别添加一个抽象方法供子类实现，同时添加一个***模版方法***并顺序的调用这些抽象方法。对于所有算法实现上均相同的部分步骤，我们可以不作为抽象方法而提供公共的实现。
-![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6624cff0bed04758a65cb88018b649d1~tplv-k3u1fbpfcp-watermark.image?)
+3. 我们尝试在公共父类 Encryptor 中，为各步骤分别添加一个抽象方法供子类实现，同时添加一个**_模版方法_**并顺序的调用这些抽象方法。对于所有算法实现上均相同的部分步骤，我们可以不作为抽象方法而提供公共的实现。
+   ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6624cff0bed04758a65cb88018b649d1~tplv-k3u1fbpfcp-watermark.image?)
 
 ### 模式
-encrypt、decrypt方法即成为***模版方法***。我们称这种将公共流程放入***模版方法***，具体每个步骤在派生类中实现的模式称为***模版方法模式***。
+
+encrypt、decrypt 方法即成为**_模版方法_**。我们称这种将公共流程放入**_模版方法_**，具体每个步骤在派生类中实现的模式称为**_模版方法模式_**。
 
 ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a6203542a5cf4610ba835161754d0a7e~tplv-k3u1fbpfcp-watermark.image?)
 
 ## 解释器模式(Interpreter)
-![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1f982ca4d685472bb5e0f4e8e5faacde~tplv-k3u1fbpfcp-watermark.image?)
 
+![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1f982ca4d685472bb5e0f4e8e5faacde~tplv-k3u1fbpfcp-watermark.image?)
 
 # 总结
 
 ![5-201123151944949.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ba292f5bd39c4f2d999190bb6feae886~tplv-k3u1fbpfcp-watermark.image?)
-

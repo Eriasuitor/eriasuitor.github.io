@@ -1,0 +1,32 @@
+.title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--vice-font-color);
+}
+
+.title:hover {
+  cursor: pointer;
+}
+
+.title.not_leaf .icon {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 3px;
+  transform: rotate(90deg);
+  background-image: url(/expand.svg);
+}
+
+.title.not_leaf.expanded .icon {
+  transform: rotate(180deg);
+}
+
+.scroll_main {
+  font-weight: bold;
+}

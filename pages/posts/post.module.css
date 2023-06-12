@@ -1,0 +1,21 @@
+.post_content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.toc {
+  position: fixed;
+  right: 1rem;
+  top: 5rem;
+  max-height: calc(100% - 6rem);
+  overflow: scroll;
+  width: 223px;
+}
+
+.section {
+  position: fixed;
+  left: 1rem;
+  top: 5rem;
+  max-height: calc(100% - 6rem);
+  overflow: scroll;
+}
