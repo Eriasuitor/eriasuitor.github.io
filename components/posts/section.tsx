@@ -3,8 +3,7 @@ import styles from './section.module.css';
 import Link from 'next/link';
 
 export function SectionNode({ post }: { post?: PostNode }) {
-  if (!post) return <></>;
-  return (
+  return post ?
     <div className={styles.section}>
       <div className={styles.sectionTitle}>
         <Link href={post.key}>{post.title}</Link>
@@ -14,13 +13,11 @@ export function SectionNode({ post }: { post?: PostNode }) {
           <SectionNode key={section.key} post={section} />
         ))}
       </div>
-    </div>
-  );
+    </div>: <></>;
 }
 
 export function Section({ post,className }: { post?: PostNode,className?:string }) {
-  if (!post) return <></>;
-  return <div className={className}>
+  return post  ? <div className={className}>
     <SectionNode post={post} />
-  </div>;
+  </div> : <></>;
 }
