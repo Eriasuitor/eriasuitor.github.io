@@ -1,0 +1,12 @@
+.main {
+  display: flex;
+  justify-content: center;
+  line-height: 1.7;
+}
+
+.main .date_bar {
+}
+
+.main .post_line {
+  list-style: none;
+}
