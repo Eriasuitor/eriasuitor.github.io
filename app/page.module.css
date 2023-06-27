@@ -4,6 +4,10 @@
   line-height: 1.7;
 }
 
+.date_group {
+  min-width: 234px;
+}
+
 .main .date_bar {
 }
 

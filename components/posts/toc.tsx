@@ -41,7 +41,6 @@ export function Toc({
   const expand = useCallback(
     _.debounce(
       (key: string, operator: TocNodeStatusOperator, updateMain: boolean) => {
-        console.log(key);
         const chain = loopFind(headers, key, 0);
         flatHeaders.forEach(({ key }) => {
           if (updateMain && handleRef.current[key]) handleRef.current[key].isMain = false;
@@ -90,8 +89,6 @@ export function Toc({
       );
   }, [headers, flatHeaders, expand]);
   handleRef.current = expanded;
-
-  console.log('rerender');
 
   return (
     <CustomHeaderExpandedProvider expanded={expanded} setExpanded={setExpanded}>

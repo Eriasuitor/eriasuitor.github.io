@@ -5,8 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import './globals.css';
 import styles from './layout.module.css';
-import NextNProgress from 'nextjs-progressbar';
-import { Router } from 'next/router';
 
 const inter = Inter({ subsets: ['latin'] });
 

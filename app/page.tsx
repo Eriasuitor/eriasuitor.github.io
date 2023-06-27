@@ -13,7 +13,7 @@ export default async  function Home() {
       <Title text="首页" />
       <div className={classNames([styles.main])}>
         <ul>
-          {posts.map(([date, posts]) => <div key={date}>
+          {posts.map(([date, posts]) => <div key={date} className={styles.date_group}>
             <h1 className={classNames(styles.date_bar)}>{date}</h1>
             {posts.map((post) => (
               <li key={post.key} className={classNames(styles.post_line)}>

@@ -16,7 +16,7 @@
   --remark-span-border: #dddddd;
   --remark-span-border2: #333333;
   --remark-code-border-color: #eaeaea;
-  --remark-code-bg-color: #f8f8f888;
+  --remark-code-bg-color: white;
   --remark-img-brightness: 1;
   --primary-glow: conic-gradient(
     from 180deg at 50% 50%,
@@ -48,7 +48,7 @@
     --remark-span-border: #222222;
     --remark-span-border2: #dddddd;
     --remark-code-border-color: #eaeaea;
-    --remark-code-bg-color: #f8f8f888;
+    --remark-code-bg-color: dark;
     --remark-img-brightness: 0.7;
     background-color: black;
   }

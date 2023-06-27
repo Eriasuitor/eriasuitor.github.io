@@ -2,7 +2,7 @@ import { PostNode } from '@/lib/post';
 import styles from './section.module.css';
 import Link from 'next/link';
 
-export function SectionNode({ post }: { post?: PostNode }) {
+export function SectionNode({ post }: { post?: Pick<PostNode, 'key' | 'title' | 'sections'> }) {
   return post ?
     <div className={styles.section}>
       <div className={styles.sectionTitle}>
@@ -13,11 +13,11 @@ export function SectionNode({ post }: { post?: PostNode }) {
           <SectionNode key={section.key} post={section} />
         ))}
       </div>
-    </div>: <></>;
+    </div> : <></>;
 }
 
-export function Section({ post,className }: { post?: PostNode,className?:string }) {
-  return post  ? <div className={className}>
+export function Section({ post, className }: { post?: Pick<PostNode, 'key' | 'title' | 'sections'>, className?: string }) {
+  return post ? <div className={className}>
     <SectionNode post={post} />
   </div> : <></>;
 }
