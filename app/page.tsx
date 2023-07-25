@@ -5,6 +5,7 @@ import _ from 'lodash';
 import Link from 'next/link';
 import { getPosts } from '../lib/post';
 import styles from './page.module.css';
+import Head from 'next/head';
 
 export default async  function Home() {
   const posts = await listPosts();

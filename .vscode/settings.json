@@ -17,5 +17,10 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[css]": {
+    "editor.suggest.insertMode": "replace",
+    "cSpell.fixSpellingWithRenameProvider": false,
+    "editor.defaultFormatter": "vscode.css-language-features"
   }
 }

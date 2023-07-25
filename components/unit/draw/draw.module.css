@@ -1,0 +1,25 @@
+.draw {
+    position: fixed;
+    top: 5rem;
+    max-height: calc(100% - 6rem);
+    z-index: 1;
+    font-size: 13px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    -webkit-transition: .25s ease-in-out;
+    -moz-transition: .25s ease-in-out;
+    -o-transition: .25s ease-in-out;
+    transition: .25s ease-in-out;
+}
+
+.draw.left {
+    left: 0;
+}
+
+.draw.right {
+    right: 0;
+}
+
+.draw.hidden {
+    width: 0px;
+}

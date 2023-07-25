@@ -9,32 +9,33 @@ import {
 import classNames from 'classnames';
 import _ from 'lodash';
 import {
-  Dispatch,
   HTMLAttributes,
-  SetStateAction,
+  RefObject,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
-  useState,
+  useState
 } from 'react';
 import styles from './toc.module.css';
 
 export function Toc({
-  postContentKey,
+  contentRef,
+  refClassNames,
   ...args
 }: {
-  postContentKey: string;
+  contentRef: RefObject<HTMLElement>;
+  refClassNames?: string,
+  onSelect?: () => void 
 } & HTMLAttributes<HTMLDivElement>) {
-  const [headers] = useToc(postContentKey);
-  const flatHeaders = useMemo(() => {
-    function getHeaders(headers: HeaderNode[]): HeaderNode[] {
-      return headers
-        .map((header) => [header, getHeaders(header.children)].flat())
-        .flat();
-    }
-    return getHeaders(headers);
-  }, [headers]);
+  const [headers, setHeaders] = useState<HeaderNode[]>([]);
+  const [flatHeaders, setFlatHeaders] = useState<HeaderNode[]>([]);
+
+  useEffect(() => {
+    const headers = getToc(contentRef.current);
+    setHeaders(headers);
+    setFlatHeaders(getHeaders(headers));
+  }, [contentRef, refClassNames]);
+
   const handleRef = useRef<HeaderStatusType>({});
   const [expanded, setExpanded] = useState<HeaderStatusType>({});
 
@@ -68,7 +69,6 @@ export function Toc({
     ),
     [headers, flatHeaders, handleRef]
   );
-
   useEffect(() => {
     const intersectionObserver = new IntersectionObserver((entries) => {
       if (Date.now() < ignoreUntil) return;
@@ -100,6 +100,7 @@ export function Toc({
             onExpanded={(header, withScroll) => {
               ignoreUntil = Date.now() + 500;
               if (withScroll) {
+                args.onSelect?.();
                 expand(header.key, TocNodeStatusOperator.MANUAL, true);
                 header.element?.scrollIntoView({
                   behavior: 'smooth',
@@ -153,9 +154,8 @@ export function combineHeaders(
   return { end: i - 1, node: result };
 }
 
-export function getToc(postContentKey: string) {
-  const postContent = document.getElementById(postContentKey);
-  const headerElements = postContent?.querySelectorAll(
+export function getToc(element: HTMLElement | null) {
+  const headerElements = element?.querySelectorAll(
     'h1, h2, h3, h4, h5, h6'
   );
   if (!headerElements) return [];
@@ -169,15 +169,10 @@ export function getToc(postContentKey: string) {
   return result;
 }
 
-export function useToc(postContentKey: string) {
-  const [headers, setHeaders] = useState<HeaderNode[]>([]);
-  useEffect(() => {
-    setHeaders(getToc(postContentKey));
-  }, [postContentKey]);
-  return [headers, setHeaders] as [
-    HeaderNode[],
-    Dispatch<SetStateAction<HeaderNode[]>>
-  ];
+function getHeaders(headers: HeaderNode[]): HeaderNode[] {
+  return headers
+    .map((header) => [header, getHeaders(header.children)].flat())
+    .flat();
 }
 
 function loopFind(
@@ -206,7 +201,7 @@ function TocNode({
       <div
         style={{
           marginLeft: `${
-            tocNode.element?.nodeName?.replace(/[^0-9]/, '') || 0
+            Number(tocNode.element?.nodeName?.replace(/[^0-9]/, '')) - 1 || 0
           }rem`,
         }}
         className={classNames({

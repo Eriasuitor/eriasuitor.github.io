@@ -1,30 +1,11 @@
-import { Section } from '@/components/posts/section';
-import { Toc } from '@/components/posts/toc';
-import Title from '@/components/title.module';
-import 'highlight.js/styles/default.css';
 import { PostNode, getPost, getPosts } from '../../../lib/post';
-import markdownStyles from './markdown.module.css';
-import styles from './post.module.css';
-
-const postContentKey = 'post_content';
+import PostItem from './post-item';
 
 export default async function Post({ params }: {
   params: { titles: string[] };
 }) {
   const { posts, post } = await getPost(params.titles);
-  return post ? <>
-    <Title text={post.title ?? '文章'} />
-    <Toc postContentKey={postContentKey} className={styles.toc} />
-    <Section
-      post={posts.find((p) => post.key.startsWith(p.key))}
-      className={styles.section}
-    />
-    <div
-      id={postContentKey}
-      dangerouslySetInnerHTML={{ __html: post.contentHtml }}
-      className={`${styles.post_content} ${markdownStyles.post_content}`}
-    />
-  </> : <>404</>;
+  return <PostItem post={post} posts={posts} />;
 }
 
 function getAllPaths(posts: Omit<PostNode, 'contentHtml'>[]): string[] {

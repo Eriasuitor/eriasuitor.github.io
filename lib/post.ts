@@ -20,12 +20,12 @@ export interface PostNode {
   key: string;
   title?: string;
   date?: string;
-  contentHtml: string;
+  contentHtml?: string;
   sections: PostNode[];
-  [key: string]: any;
+  content?: string
 }
 
-async function recursiveReadPost(fullPath: string): Promise<PostNode> {
+async function recursiveReadPost(fullPath: string, params?: {withContent: boolean}): Promise<PostNode> {
   let contentPath: string = fullPath;
   const sections = [];
   if ((await fs.promises.stat(fullPath)).isDirectory()) {
@@ -35,24 +35,18 @@ async function recursiveReadPost(fullPath: string): Promise<PostNode> {
     for (const filename of filenames.filter(
       (filename) => path.parse(filename).name !== dirname
     )) {
-      sections.push(await recursiveReadPost(path.join(fullPath, filename)));
+      sections.push(await recursiveReadPost(path.join(fullPath, filename), params));
     }
   }
   const contentBuffer = fs.existsSync(contentPath)
     ? await fs.promises.readFile(contentPath)
     : undefined;
   const matterResult = contentBuffer ? matter(contentBuffer) : undefined;
-  const processedContent = await unified()
-    .use(remarkParse)
-    .use(remarkRehype)
-    .use(rehypeHighlight)
-    .use(rehypeFormat)
-    .use(rehypeStringify)
-    .process(matterResult?.content ?? '');
+
   return {
     key: fullPath.replace(new RegExp(`^${postDir}/`), ''),
     ...matterResult?.data,
-    contentHtml: processedContent.toString(),
+    content: params?.withContent && matterResult?.content || undefined,
     sections,
   };
 }
@@ -69,9 +63,19 @@ export async function getPosts(): Promise<Omit<PostNode, 'contentHtml'>[]> {
 }
 
 export async function getPost(titles: string[]): Promise<{posts: Pick<PostNode, 'key' | 'title' | 'sections'>[], post?: PostNode}> {
-  const posts = (await recursiveReadPost(postDir)).sections;
+  const posts = (await recursiveReadPost(postDir, {withContent: true})).sections;
+  const post = findPost((titles as string[])?.join?.('/'), posts);
+  if (!post) return {posts};
+  const contentHtml  = await unified()
+    .use(remarkParse)
+    .use(remarkRehype)
+    .use(rehypeHighlight)
+    .use(rehypeFormat)
+    .use(rehypeStringify)
+    .process(post?.content ?? ''); 
+  post.contentHtml = contentHtml.toString();
   return {
-    post: findPost((titles as string[])?.join?.('/'), posts),
+    post,
     posts,
   };
 }
