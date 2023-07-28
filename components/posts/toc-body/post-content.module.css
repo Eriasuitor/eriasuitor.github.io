@@ -407,6 +407,9 @@
 .post_content code {
   white-space: pre-wrap;
   word-break: break-all;
+}
+
+.post_content pre code {
   display: block;
 }
 
