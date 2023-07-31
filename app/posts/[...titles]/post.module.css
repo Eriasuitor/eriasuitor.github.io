@@ -10,7 +10,7 @@
 }
 
 .post_content.mask {
-  filter: blur(5px)
+  filter: blur(5px);
 }
 
 .draw_wrapper,
@@ -76,6 +76,7 @@
 
   .post_content {
     padding: 0 8px;
+    margin-top: 60px;
   }
 
   .toc.hidden,

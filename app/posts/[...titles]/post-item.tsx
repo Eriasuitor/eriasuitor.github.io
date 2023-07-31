@@ -68,6 +68,10 @@ export default function PostItem({posts, post}: {  post?: PostNode, posts: PostN
       id={postContentKey}
       ref={postContentRef}
       post={post} 
+      onClick={!hideSection || !hideToc? () => {
+        setHideToc(true);
+        setHideSection(true);
+      } : undefined}
       className={classNames({
         [styles.post_content]:true,
         [styles.mask]: !hideSection || !hideToc,
